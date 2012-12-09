@@ -38,15 +38,3 @@ CREATE TABLE building_addresses
 WITH (
   OIDS=FALSE
 );
-
-CREATE TABLE obj_names
-(
-  obj_name text,
-  name_tag text,
-  tag_lang text,
-  src_id bigint,
-  src_type character(1)
-)
-WITH (
-  OIDS=FALSE
-);
