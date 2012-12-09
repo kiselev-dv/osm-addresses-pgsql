@@ -4,3 +4,6 @@
 *.osc
 *.osm
 *.osm.bz2
+
+#backups
+*.*~
