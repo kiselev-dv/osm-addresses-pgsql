@@ -1,0 +1,6 @@
+#osm dump files
+*.o5m
+*.pbf
+*.osc
+*.osm
+*.osm.bz2
