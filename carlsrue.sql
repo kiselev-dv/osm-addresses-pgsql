@@ -41,7 +41,28 @@ RETURNS SETOF record AS $$
 			END IF;
 			
 			RETURN NEXT;
+		
+		-- CZ
+		-- streetnumber and conscriptionnumber
+		ELSIF b_tags ?| ARRAY['addr:conscriptionnumber', 'addr:streetnumber'] THEN
 			
+			addr_rec_type := 'SNCN_1';
+			hn := b_tags -> 'addr:streetnumber';
+			street := b_tags -> 'addr:street';
+			quarter_tag := b_tags -> 'addr:quarter';
+			suburb_tag := b_tags -> 'addr:suburb';
+			city_tag := b_tags -> 'addr:city';
+			RETURN NEXT;
+
+			addr_rec_type := 'SNCN_2';
+			hn := b_tags -> 'addr:conscriptionnumber';
+			street := Null;
+			quarter_tag := b_tags -> 'addr:quarter';
+			suburb_tag := b_tags -> 'addr:suburb';
+			city_tag := b_tags -> 'addr:city';
+			RETURN NEXT;
+			
+	
 		-- housenumber=hn1/hn2 helo St. Petersburg
 		ELSIF b_tags ? 'addr:street2' THEN
 

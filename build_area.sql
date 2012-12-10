@@ -10,7 +10,7 @@ from relations as src_rel where src_rel.tags -> 'type' = 'multipolygon' or src_r
 
 insert into polygons select id as src_id, 'W' as src_type, ST_Multi(ST_MakePolygon(linestring)) as geometry, tags
 from ways 
-where tags ?| ARRAY['place', 'boundary'] and ST_IsClosed(linestring) and not EXISTS(
+where tags ?| ARRAY['place', 'boundary'] and ST_IsClosed(linestring) and ST_NumPoints(linestring) > 3 and not EXISTS(
 	select member_id from relation_members where relation_id=id and (member_role='outer' or member_role='inner')
 );
 

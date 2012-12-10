@@ -50,3 +50,16 @@ CREATE TABLE obj_names
 WITH (
   OIDS=FALSE
 );
+
+CREATE TABLE lang_codes
+(
+  code character(2)
+)
+WITH (
+  OIDS=FALSE
+);
+
+CREATE INDEX inx_lang_code
+  ON lang_codes
+  USING btree
+  (code COLLATE pg_catalog."default" );
