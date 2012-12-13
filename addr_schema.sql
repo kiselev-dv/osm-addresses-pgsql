@@ -22,6 +22,8 @@ WITH (
   OIDS=FALSE
 );
 
+create index poly_geometry on polygons using GIST(geometry);
+
 CREATE TABLE building_addresses
 (
   src_id bigint,
