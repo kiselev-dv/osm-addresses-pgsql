@@ -1,5 +1,4 @@
-﻿insert into polygons
-
+insert into polygons 
 select src_rel.id as src_id, 'R' as src_type, ST_Multi(ST_BuildArea(ST_LineMerge(
 	(select ST_Union(way.linestring) from relations as rel 
 		join relation_members as memb on rel.id = memb.relation_id
