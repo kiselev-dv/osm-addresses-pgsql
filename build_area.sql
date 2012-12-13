@@ -5,7 +5,7 @@ select src_rel.id as src_id, 'R' as src_type, ST_Multi(ST_BuildArea(ST_LineMerge
 		join ways as way on way.id = memb.member_id
 	where rel.id=src_rel.id and memb.member_type = 'W' and (memb.member_role = 'outer' or memb.member_role = 'inner'))
 ))) as geometry, src_rel.tags as tags
-from relations as src_rel where src_rel.where tags ?| ARRAY['place', 'boundary'];
+from relations as src_rel where src_rel.tags ?| ARRAY['place', 'boundary'];
 
 insert into polygons select id as src_id, 'W' as src_type, ST_Multi(ST_MakePolygon(linestring)) as geometry, tags
 from ways 
