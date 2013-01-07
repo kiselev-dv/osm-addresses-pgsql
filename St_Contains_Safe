@@ -1,0 +1,14 @@
+﻿create or replace function ST_Contains_Safe(A IN geometry, B IN geometry)
+RETURNS boolean AS $$
+
+	DECLARE			
+		i int;
+	BEGIN
+		IF (A is not null and B is not null) THEN
+			return ST_Contains(A, B);
+		ELSE
+			return null;
+		END IF;
+	END;
+
+$$ LANGUAGE plpgsql IMMUTABLE;
