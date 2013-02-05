@@ -3,33 +3,13 @@
 date
 
 echo "clean"
-psql -d osm_snapshot -c "delete from b_convex;"
-psql -d osm_snapshot -c "delete from convex_to_polygons;"
-psql -d osm_snapshot -c "delete from building_to_polygons;"
+psql -d osm_snapshot -c "delete from group_to_polygons;"
 psql -d osm_snapshot -c "delete from top_level_boundaries;"
 
 date
 
-echo "create convexes for building nodes clusters"
-
-psql -d osm_snapshot -c "
-	insert into b_convex SELECT 
-	    array_agg(src_id),    
-	    array_agg(src_type), 
-	    ST_ConvexHull(ST_Collect( centroid )) AS geom 
-	FROM buildings 	
-	GROUP BY ST_SnapToGrid(centroid, 0.005, 0.005);"
-
-echo "delete invalid convexes"
-psql -d osm_snapshot -c "delete from b_convex where not ST_IsValid(convex);"
-
-date
-echo "fill hierarchy for convexes"
-psql -d osm_snapshot -c "
-insert into convex_to_polygons select c.convex_id, p.src_id, p.src_type
-	from b_convex c	
-	join polygons p on ST_Contains(p.geometry, c.convex) 
-where not p.tags @> 'admin_level=>2' and not p.tags @> 'admin_level=>3' and not p.tags @> 'admin_level=>4';"
+echo "find groups"
+psql -d osm_snapshot -f group_buildings.sql
 
 date
 echo "stipe 2-4 level boundaries"
@@ -40,19 +20,17 @@ where p.tags @> 'admin_level=>2' or p.tags @> 'admin_level=>3' or p.tags @> 'adm
 date
 echo "fill hierarchy for convexes levels 2-4"
 psql -d osm_snapshot -c "
-insert into convex_to_polygons select c.convex_id, p.src_id, p.src_type
-	from b_convex c	
-	join top_level_boundaries p on ST_Contains(p.geometry, c.convex);"
-
+insert into group_to_polygons select bg.id, p.src_id, p.src_type
+	from building_groups bg	
+	join top_level_boundaries p on ST_Contains(p.geometry, bg.geometry);"
 
 date
-echo "fill buildings to polygons by convex data"
-#psql -d osm_snapshot -f arr_to_table2_function.sql
-
-#date
+echo "fill hierarchy for groups"
 psql -d osm_snapshot -c "
-insert into building_to_polygons select (arr_to_table2(c.ids, c.types)).*, p.p_src_id, p.p_src_type from b_convex c
-	join convex_to_polygons p on c.convex_id = p.convex_id;"
+insert into group_to_polygons select bg.id, p.src_id, p.src_type
+	from building_groups bg	
+	join polygons p on ST_Contains(p.geometry, bg.geometry) 
+where not p.tags @> 'admin_level=>2' and not p.tags @> 'admin_level=>3' and not p.tags @> 'admin_level=>4';"
 
 echo "all done"
 
