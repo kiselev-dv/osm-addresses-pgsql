@@ -4,6 +4,7 @@ osm-addresses-pgsql
 Postgres postgis project to compile address registry on osm data
 
 Requrie
+_______
 
 Postgresql 9.1 postgis hstore
 
@@ -13,6 +14,7 @@ osmfilter
 osmosis
 
 Concept
+_______
 
 It's not a validator. First try to find so many addresses and translations as possible, second range them as correct and maybe incorrect.
 
