@@ -22,7 +22,7 @@ date
 echo "convert filtered data to pbf"
 osmconvert boundaries.o5m -o=boundaries.pbf
 date
-osmconvert buildings.o5m --all-to-nodes -o=buildings.pbf
+osmconvert buildings.o5m -o=buildings.pbf
 date
 osmconvert streets.o5m --all-to-nodes -o=streets.pbf
 echo "done"

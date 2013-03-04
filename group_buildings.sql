@@ -6,14 +6,16 @@ create temp table  IF NOT EXISTS b_convex (
 	src_type character[],		
 	geometry geometry,
 	convex_id serial
-) ON COMMIT DELETE ROWS;
+);
+delete from b_convex;
 
 insert into b_convex SELECT 
 	    array_agg(src_id),    
-	    array_agg(src_type), 
-	    ST_ConvexHull(ST_Collect( centroid )) AS geometry 
-	FROM buildings 		
+	    array_agg(src_type), 	    
+	    (case array_length(array_agg(src_id), 1) > 2 when true then ST_ConvexHull(ST_Collect( centroid )) else null end ) AS geometry 
+	FROM buildings 			
 	GROUP BY ST_SnapToGrid(centroid, 0.005, 0.005);
+	
 
 delete from building_groups where not ST_IsValid(geometry);	
 
