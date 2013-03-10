@@ -8,7 +8,7 @@ echo "done"
 
 date
 echo "filter data"
-osmfilter all.o5m --keep="admin_level= place= addr:housenumber= addr:interpolation= type=associatedStreet" --keep-ways="highway= and name= " -o=addresses.o5m
+osmfilter all.o5m --keep="admin_level= place= addr:housenumber= addr:interpolation= type=associatedStreet" --keep-ways="(highway= or area:highway= )and name= " -o=addresses.o5m
 rm all.o5m
 echo "done"
 
@@ -18,7 +18,7 @@ osmfilter addresses.o5m --keep="admin_level= place= " -o=boundaries.o5m
 
 date
 echo "filter buildings and streets"
-osmfilter addresses.o5m --keep="addr:housenumber= addr:housename= type=associatedStreet" --keep-ways="highway= and name= " -o=buildings.o5m
+osmfilter addresses.o5m --keep="addr:housenumber= addr:housename= type=associatedStreet" --keep-ways="(highway= or area:highway= )and name= " -o=buildings.o5m
 
 date
 echo "filter addr interpolation"
@@ -47,7 +47,6 @@ echo "done"
 date
 echo "import data"
 osmosis --read-pbf addr-data.pbf --write-pgsql nodeLocationStoreType=TempFile database=osm_snapshot user=dkiselev password=123
-date
 
 rm addr-data.pbf
 
