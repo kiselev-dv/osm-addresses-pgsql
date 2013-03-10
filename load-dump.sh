@@ -12,22 +12,32 @@ osmfilter all.o5m --keep="admin_level= place= addr:housenumber= addr:interpolati
 rm all.o5m
 echo "done"
 
+date
+echo "filter places and boundaries"
 osmfilter addresses.o5m --keep="admin_level= place= " -o=boundaries.o5m
-osmfilter addresses.o5m --keep="addr:housenumber= addr:housename= addr:interpolation= type=associatedStreet" -o=buildings.o5m
-osmfilter addresses.o5m --keep-ways="highway= and name= " -o=streets.o5m
+
+date
+echo "filter buildings and streets"
+osmfilter addresses.o5m --keep="addr:housenumber= addr:housename= type=associatedStreet" --keep-ways="highway= and name= " -o=buildings.o5m
+
+date
+echo "filter addr interpolation"
+osmfilter addresses.o5m --keep="addr:interpolation=" -o=interpolation.o5m
 
 rm addresses.o5m
 
 date
-echo "convert filtered data to pbf"
-osmconvert boundaries.o5m -o=boundaries.pbf
-date
-osmconvert buildings.o5m -o=buildings.pbf
-date
-osmconvert streets.o5m --all-to-nodes -o=streets.pbf
+echo "simplify"
+osmconvert buildings.o5m --all-to-nodes -o=buildings-simple.o5m
 echo "done"
 
-rm addresses.o5m boundaries.o5m buildings.o5m streets.o5m
+rm buildings.o5m
+
+date
+echo "merge data"
+osmconvert boundaries.o5m buildings-simple.o5m interpolation.o5m -o=addr-data.pbf
+
+rm streets.o5m buildings-simple.o5m interpolation.o5m
 
 date
 echo "clean snapshot"
@@ -35,15 +45,11 @@ osmosis --truncate-pgsql database=osm_snapshot user=dkiselev password=123
 echo "done"
 
 date
-echo "import boundaries"
-osmosis --read-pbf boundaries.pbf --write-pgsql nodeLocationStoreType=TempFile database=osm_snapshot user=dkiselev password=123
+echo "import data"
+osmosis --read-pbf addr-data.pbf --write-pgsql nodeLocationStoreType=TempFile database=osm_snapshot user=dkiselev password=123
 date
-echo "import buildings"
-osmosis --read-pbf buildings.pbf --write-pgsql nodeLocationStoreType=TempFile database=osm_snapshot user=dkiselev password=123
-date
-echo "import streets"
-osmosis --read-pbf streets.pbf --write-pgsql nodeLocationStoreType=TempFile database=osm_snapshot user=dkiselev password=123
-echo "done"
+
+rm addr-data.pbf
 
 date
 echo "all done."
