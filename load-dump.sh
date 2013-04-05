@@ -18,7 +18,7 @@ osmfilter addresses.o5m --keep="admin_level= place= " -o=boundaries.o5m
 
 date
 echo "filter buildings and streets"
-osmfilter addresses.o5m --keep="addr:housenumber= addr:housename= type=associatedStreet" --keep-ways="(highway= or area:highway= )and name= " -o=buildings.o5m
+osmfilter addresses.o5m --keep="addr:housenumber= addr:housename= type=associatedStreet" --keep-ways="(highway=motorway =trunk =primary =secondary =tertiary =residential =unclassified = service =track =pedestrian =footway) and name=" --keep="area:highway= and name=" -o=buildings.o5m
 
 date
 echo "filter addr interpolation"
@@ -28,7 +28,7 @@ rm addresses.o5m
 
 date
 echo "simplify"
-osmconvert buildings.o5m --all-to-nodes -o=buildings-simple.o5m
+osmconvert buildings.o5m --all-to-nodes --max-objects=50000000 -o=buildings-simple.o5m
 echo "done"
 
 rm buildings.o5m
